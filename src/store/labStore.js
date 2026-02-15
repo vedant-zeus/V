@@ -1,22 +1,25 @@
 import { create } from "zustand";
 import axios from "axios";
 
+const API = "http://localhost:5000/api/experiments";
+
 export const useLabStore = create((set, get) => ({
-  /* ---------------- STATE ---------------- */
   experimentId: null,
   solvent: null,
   solutes: [],
   liquidLevel: 0,
   liquidColor: "#ffffff",
-  reacting: false,
   temperature: 25,
+  steps: [],
+  reactionType: null,
+  equation: null,
+  precipitate: false,
+  gas: false,
 
-  /* ---------------- START EXPERIMENT ---------------- */
+  /* ---------------- START ---------------- */
   startExperiment: async () => {
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/experiments/start"
-      );
+      const res = await axios.post(`${API}/start`);
 
       set({
         experimentId: res.data._id,
@@ -25,116 +28,133 @@ export const useLabStore = create((set, get) => ({
         liquidLevel: 0,
         liquidColor: "#ffffff",
         temperature: 25,
+        steps: [],
+        reactionType: null,
+        equation: null,
+        precipitate: false,
+        gas: false,
       });
 
       console.log("Experiment Started:", res.data._id);
-    } catch (error) {
-      console.error("Start Experiment Error:", error);
+    } catch (err) {
+      console.error(err);
     }
   },
 
   /* ---------------- ADD SOLVENT ---------------- */
-  addSolvent: async (solvent) => {
-    const { experimentId, temperature } = get();
+  addSolvent: (solvent) => {
+    const { temperature, steps } = get();
 
     set({
       solvent,
       liquidLevel: 1.5,
       liquidColor: solvent.color,
+      steps: [
+        ...steps,
+        {
+          action: "add_solvent",
+          chemical: solvent.name,
+          temperature,
+          liquidColor: solvent.color,
+        },
+      ],
     });
-
-    if (experimentId) {
-      try {
-        await axios.post(
-          `http://localhost:5000/api/experiments/step/${experimentId}`,
-          {
-            action: "add_solvent",
-            chemical: solvent.name,
-            temperature,
-            liquidColor: solvent.color,
-          }
-        );
-      } catch (error) {
-        console.error("Add Solvent Error:", error);
-      }
-    }
   },
 
   /* ---------------- ADD SOLUTE ---------------- */
-  addSolute: async (solute) => {
-    const { experimentId, temperature, solutes } = get();
+  addSolute: (solute) => {
+  const {
+    solutes,
+    solvent,
+    temperature,
+    steps,
+  } = get();
 
-    const newTemp = temperature + solute.tempChange;
+  const updatedSolutes = [...solutes, solute];
 
-    set({
-      solutes: [...solutes, solute],
-      liquidColor: solute.reactionColor,
-      reacting: true,
-      temperature: newTemp,
-    });
+  let newTemp = temperature;
+  let newColor = solute.reactionColor;
+  let reactionType = null;
+  let equation = null;
+  let precipitate = false;
+  let gas = false;
 
-    // Stop reaction glow after 3 sec
-    setTimeout(() => {
-      set({ reacting: false });
-    }, 3000);
+  const allChemicals = [
+    solvent?.formula,
+    ...updatedSolutes.map((s) => s.formula),
+  ].filter(Boolean);
 
-    if (experimentId) {
-      try {
-        await axios.post(
-          `http://localhost:5000/api/experiments/step/${experimentId}`,
-          {
-            action: "add_solute",
-            chemical: solute.name,
-            temperature: newTemp,
-            liquidColor: solute.reactionColor,
-          }
-        );
-      } catch (error) {
-        console.error("Add Solute Error:", error);
-      }
-    }
-  },
+  const matched = reactionDatabase.find((reaction) =>
+    reaction.reactants.every((chem) =>
+      allChemicals.includes(chem)
+    )
+  );
 
-  /* ---------------- FINISH EXPERIMENT ---------------- */
+  if (matched) {
+    newTemp += matched.temperatureChange;
+    newColor = matched.resultColor;
+    reactionType = matched.type;
+    equation = matched.equation;
+    precipitate = matched.precipitate;
+    gas = matched.gas;
+  }
+
+  set({
+    solutes: updatedSolutes,
+    temperature: newTemp,
+    liquidColor: newColor,
+    reactionType,
+    equation,
+    precipitate,
+    gas,
+  });
+}
+,
+
+  /* ---------------- FINISH ---------------- */
   finishExperiment: async () => {
-    const { experimentId, temperature, liquidColor, solutes } = get();
+    const {
+      experimentId,
+      temperature,
+      liquidColor,
+      solutes,
+      steps,
+    } = get();
 
     if (!experimentId) return;
 
     try {
-      await axios.post(
-        `http://localhost:5000/api/experiments/finish/${experimentId}`,
-        {
-          temperature,
-          liquidColor,
-          solutes: solutes.map((s) => s.name),
-        }
-      );
+      // Upload all steps
+      for (const step of steps) {
+        await axios.post(`${API}/step/${experimentId}`, step);
+      }
 
-      console.log("Experiment Finished");
-    } catch (error) {
-      console.error("Finish Experiment Error:", error);
+      await axios.post(`${API}/finish/${experimentId}`, {
+        temperature,
+        liquidColor,
+        solutes: solutes.map((s) => s.name),
+      });
+
+      window.open(`${API}/report/${experimentId}`);
+
+      console.log("Experiment Finished & Report Downloaded");
+    } catch (err) {
+      console.error(err);
     }
   },
 
-  /* ---------------- DOWNLOAD REPORT ---------------- */
-  downloadReport: () => {
-    const { experimentId } = get();
-    if (!experimentId) return;
-
-    window.open(
-      `http://localhost:5000/api/experiments/report/${experimentId}`
-    );
-  },
-
-  /* ---------------- RESET LAB ---------------- */
+  /* ---------------- RESET ---------------- */
   resetLab: () =>
     set({
       solvent: null,
       solutes: [],
       liquidLevel: 0,
       liquidColor: "#ffffff",
-      reacting: false,
       temperature: 25,
+      steps: [],
+      reactionType: null,
+      equation: null,
+      precipitate: false,
+      gas: false,
     }),
 }));

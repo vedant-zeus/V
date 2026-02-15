@@ -5,7 +5,13 @@ import ChemicalPanel from "./ui/ChemicalPanel";
 import { useLabStore } from "./store/labStore";
 
 function App() {
-  const { temperature, reactionType, experimentId } = useLabStore();
+  const {
+    experimentId,
+    temperature,
+    steps,
+  } = useLabStore();
+
+  const isRunning = Boolean(experimentId);
 
   return (
     <div className="app-container">
@@ -15,29 +21,43 @@ function App() {
 
         <div className="sidebar-header">
           <h2>🧪 Virtual Chem Lab</h2>
+
           <p className="session-status">
-            {experimentId ? "🟢 Experiment Running" : "🔴 Not Started"}
+            {isRunning
+              ? "🟢 Experiment Running"
+              : "🔴 Not Started"}
           </p>
         </div>
 
+        {/* Controls (Start / Finish / Reset) */}
         <Controls />
 
         <div className="divider" />
 
+        {/* Chemicals */}
         <ChemicalPanel />
 
         <div className="divider" />
 
-        {/* Live Data Panel */}
+        {/* Live Experiment Info */}
         <div className="live-panel">
-          <h3>Live Status</h3>
-          <p>🌡 Temperature: <strong>{temperature}°C</strong></p>
+          <h3>Experiment Info</h3>
+
           <p>
-            ⚗ Reaction:{" "}
+            🌡 Temperature: <strong>{temperature}°C</strong>
+          </p>
+
+          <p>
+            📋 Steps Performed: <strong>{steps.length}</strong>
+          </p>
+
+          <p>
+            🧾 Experiment ID:{" "}
             <strong>
-              {reactionType ? reactionType : "None"}
+              {experimentId ? experimentId.slice(0, 8) : "—"}
             </strong>
           </p>
+          
         </div>
 
       </div>

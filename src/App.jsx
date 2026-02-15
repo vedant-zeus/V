@@ -2,6 +2,7 @@ import "./App.css";
 import LabScene from "./components/LabScene";
 import Controls from "./ui/Controls";
 import ChemicalPanel from "./ui/ChemicalPanel";
+import ApparatusPanel from "./ui/ApparatusPanel";
 import { useLabStore } from "./store/labStore";
 
 function App() {
@@ -9,6 +10,10 @@ function App() {
     experimentId,
     temperature,
     steps,
+    reactionType,
+    equation,
+    precipitate,
+    gas,
   } = useLabStore();
 
   const isRunning = Boolean(experimentId);
@@ -16,8 +21,8 @@ function App() {
   return (
     <div className="app-container">
 
-      {/* -------- Sidebar -------- */}
-      <div className="sidebar">
+      {/* -------- LEFT SIDEBAR -------- */}
+      <div className="sidebar-left">
 
         <div className="sidebar-header">
           <h2>🧪 Virtual Chem Lab</h2>
@@ -29,17 +34,14 @@ function App() {
           </p>
         </div>
 
-        {/* Controls (Start / Finish / Reset) */}
         <Controls />
 
         <div className="divider" />
 
-        {/* Chemicals */}
         <ChemicalPanel />
 
         <div className="divider" />
 
-        {/* Live Experiment Info */}
         <div className="live-panel">
           <h3>Experiment Info</h3>
 
@@ -57,14 +59,49 @@ function App() {
               {experimentId ? experimentId.slice(0, 8) : "—"}
             </strong>
           </p>
-          
+
+          <div className="divider" />
+
+          <h3>Reaction Status</h3>
+
+          <p>
+            ⚗ Type:{" "}
+            <strong>
+              {reactionType ? reactionType : "No Reaction"}
+            </strong>
+          </p>
+
+          <p>
+            🧪 Equation:
+            <br />
+            <strong>
+              {equation ? equation : "—"}
+            </strong>
+          </p>
+
+          {precipitate && (
+            <p style={{ color: "#f1f5f9" }}>
+              ⚪ Precipitate Formed
+            </p>
+          )}
+
+          {gas && (
+            <p style={{ color: "#3b82f6" }}>
+              🫧 Gas Evolved
+            </p>
+          )}
         </div>
 
       </div>
 
-      {/* -------- 3D Scene -------- */}
+      {/* -------- CENTER SCENE -------- */}
       <div className="scene-container">
         <LabScene />
+      </div>
+
+      {/* -------- RIGHT SIDEBAR -------- */}
+      <div className="sidebar-right">
+        <ApparatusPanel />
       </div>
 
     </div>

@@ -1,57 +1,47 @@
-/* ---------------- SOLVENTS ---------------- */
 export const solvents = [
   {
-    id: "water",
-    name: "Water (H₂O)",
-    type: "solvent",
+    name: "Water",
+    formula: "H2O",
+    role: "solvent",
+    state: "l",
     color: "#3b82f6",
   },
 ];
 
-/* ---------------- SOLUTES ---------------- */
 export const solutes = [
   {
-    id: "nacl",
-    name: "Sodium Chloride (NaCl)",
-    type: "solute",
-    reactionColor: "#a855f7",
-    tempChange: 2,
+    name: "Hydrochloric Acid",
+    formula: "HCl",
+    type: "acid",
+    state: "aq",
+    color: "#ef4444",
   },
   {
-    id: "hcl",
-    name: "Hydrochloric Acid (HCl)",
-    type: "solute",
-    reactionColor: "#ef4444",
-    tempChange: 8,
+    name: "Sodium Hydroxide",
+    formula: "NaOH",
+    type: "base",
+    state: "aq",
+    color: "#22c55e",
   },
   {
-    id: "naoh",
-    name: "Sodium Hydroxide (NaOH)",
-    type: "solute",
-    reactionColor: "#22c55e",
-    tempChange: 6,
+    name: "Silver Nitrate",
+    formula: "AgNO3",
+    type: "salt",
+    state: "aq",
+    color: "#f97316",
   },
   {
-    id: "agno3",
-    name: "Silver Nitrate (AgNO₃)",
-    type: "solute",
-    reactionColor: "#f97316",
-    tempChange: 5,
-  },
-];
-
-/* ---------------- REACTION RULES ---------------- */
-export const reactions = [
-  {
-    reactants: ["hcl", "naoh"],
-    resultColor: "#facc15",
-    temperatureChange: 15,
-    type: "Neutralization",
+    name: "Sodium Chloride",
+    formula: "NaCl",
+    type: "salt",
+    state: "aq",
+    color: "#e5e7eb",
   },
   {
-    reactants: ["agno3", "nacl"],
-    resultColor: "#e5e7eb",
-    temperatureChange: 5,
-    type: "Precipitation",
+    name: "Sodium Carbonate",
+    formula: "Na2CO3",
+    type: "salt",
+    state: "aq",
+    color: "#38bdf8",
   },
 ];

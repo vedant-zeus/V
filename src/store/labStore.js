@@ -2,7 +2,7 @@ import { create } from "zustand";
 import axios from "axios";
 import { classifyReaction } from "../data/reactionEngine";
 
-const API = "http://localhost:5000/api/experiments";
+const API = "https://backend-chem-lab.onrender.com/api/experiments";
 
 export const useLabStore = create((set, get) => ({
   /* ---------------- CORE STATE ---------------- */

@@ -117,6 +117,6 @@ Perfect/
 
 
 ## 🤝 Contact
-Your Name - [@yourtwitter](https://twitter.com/yourtwitter) - email@example.com
+Your Name - Vedant Amrutkar - Contact [https://www.vedantamrutkar.site/]
 
-Project Link: [https://github.com/your-username/virtual-chem-lab](https://github.com/your-username/virtual-chem-lab)
+Project Link: v-one-kohl.vercel.app

@@ -1,16 +1,122 @@
-# React + Vite
+# 🧪 Virtual Chem Lab: 3D Chemistry Simulation
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Three.js](https://img.shields.io/badge/Three.js-black?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
+[![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 
-Currently, two official plugins are available:
+An immersive, full-stack 3D chemistry laboratory simulation. Perform complex chemical reactions in a virtual environment, track results in real-time, and generate automated lab reports.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 📸 Preview
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+![Hero Interface Placeholder](https://via.placeholder.com/1200x600.png?text=Virtual+Chem+Lab+3D+Interface+Screenshot)
+*Perform experiments with drag-and-drop chemicals and interactive 3D apparatus.*
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## ✨ Key Features
+
+### 🧊 Immersive 3D Simulation
+- **Dynamic Apparatus**: Interchangeable 3D models for Beakers, Flasks, and Test Tubes built with `Three.js` and `@react-three/fiber`.
+- **Realistic Liquids**: Shader-based liquid simulation that responds to volume changes and chemical reactions.
+- **Reaction Effects**: Visual feedback for precipitates (white/colored solids) and gas evolution (bubbles).
+
+### ⚗️ Advanced Reaction Engine
+- **Intelligent Classification**: Automatically detects reaction types (Acid-Base, Precipitation, Redox, etc.).
+- **Thermodynamic Tracking**: Real-time temperature monitoring as chemicals interact (Exothermic/Endothermic).
+- **Equation Generation**: Dynamically formats chemical equations for the performed actions.
+
+### 📋 Full-Stack Experiment Management
+- **Interactive Control**: Drag-and-drop interface for adding solvents and solutes.
+- **Session Persistence**: Stores every experiment step in a MongoDB database.
+- **PDF Reporting**: Instant lab report generation using `PDFKit`, capturing all steps, observations, and equations.
+
+---
+
+## 🛠 Tech Stack
+
+### Frontend
+- **Framework**: React 18 (Vite)
+- **3D Graphics**: Three.js, React Three Fiber, Drei
+- **State Management**: Zustand
+- **Animations**: Framer Motion
+- **Interactions**: React DnD (Drag & Drop)
+- **Styling**: Tailwind CSS
+
+### Backend
+- **Server**: Node.js & Express
+- **Database**: MongoDB (Mongoose)
+- **Document Generation**: PDFKit
+- **Integration**: REST API with Axios
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js (v18+)
+- MongoDB (Local or Atlas)
+
+### Installation
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/your-username/virtual-chem-lab.git
+   cd virtual-chem-lab
+   ```
+
+2. **Backend Setup**
+   ```bash
+   cd chem-lab-backend
+   npm install
+   # Create a .env file with:
+   # PORT=10000
+   # MONGO_URI=your_mongodb_connection_string
+   npm run dev
+   ```
+
+3. **Frontend Setup**
+   ```bash
+   cd ../virtual-chem-lab
+   npm install
+   # Create a .env file with:
+   # VITE_API_URL=http://localhost:10000/api/experiments
+   npm run dev
+   ```
+
+---
+
+## 📂 Project Structure
+
+```text
+Perfect/
+├── virtual-chem-lab/       # React Frontend
+│   ├── src/
+│   │   ├── components/     # 3D Objects & Scene
+│   │   ├── store/          # Zustand State (Lab logic)
+│   │   ├── data/           # Reaction rules & Chemical logic
+│   │   └── ui/             # Sidebar & Controls
+├── chem-lab-backend/       # Express API
+│   ├── models/             # MongoDB Schema (Experiments)
+│   ├── routes/             # Experiment & Report logic
+│   └── server.js           # API Entry point
+```
+
+---
+
+## 🗺 Roadmap
+- [ ] Multi-chemical simultaneous reactions.
+- [ ] VR/AR support for Meta Quest.
+- [ ] Expanded chemical database (100+ compounds).
+- [ ] Student vs. Teacher portal roles.
+
+---
+
+
+
+## 🤝 Contact
+Your Name - [@yourtwitter](https://twitter.com/yourtwitter) - email@example.com
+
+Project Link: [https://github.com/your-username/virtual-chem-lab](https://github.com/your-username/virtual-chem-lab)

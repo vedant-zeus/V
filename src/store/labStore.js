@@ -2,7 +2,18 @@ import { create } from "zustand";
 import axios from "axios";
 import { classifyReaction } from "../data/reactionEngine";
 
-const API = "https://backend-chem-lab.onrender.com/api/experiments";
+
+/* ---------------- API CONFIG ---------------- */
+
+// Use environment variable for API URL, default to local backend
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:10000/api/experiments";
+
+const api = axios.create({
+  baseURL: API_BASE,
+  withCredentials: false,
+});
+
+/* ---------------- STORE ---------------- */
 
 export const useLabStore = create((set, get) => ({
   /* ---------------- CORE STATE ---------------- */
@@ -22,11 +33,11 @@ export const useLabStore = create((set, get) => ({
 
   steps: [],
 
-  /* ---------------- NEW: APPARATUS SYSTEM ---------------- */
   selectedApparatus: "beaker",
 
+  /* ---------------- APPARATUS ---------------- */
+
   setApparatus: (type) => {
-    // When switching apparatus, reset liquid visuals
     set({
       selectedApparatus: type,
       liquidLevel: 0,
@@ -41,9 +52,10 @@ export const useLabStore = create((set, get) => ({
   },
 
   /* ---------------- START EXPERIMENT ---------------- */
+
   startExperiment: async () => {
     try {
-      const res = await axios.post(`${API}/start`);
+      const res = await api.post("/start");
 
       set({
         experimentId: res.data._id,
@@ -59,13 +71,14 @@ export const useLabStore = create((set, get) => ({
         gas: false,
       });
 
-      console.log("Experiment Started:", res.data._id);
+      console.log("✅ Experiment Started:", res.data._id);
     } catch (err) {
-      console.error(err);
+      console.error("❌ Start Experiment Error:", err.response?.data || err.message);
     }
   },
 
   /* ---------------- ADD SOLVENT ---------------- */
+
   addSolvent: (solvent) => {
     const { temperature, steps } = get();
 
@@ -88,14 +101,9 @@ export const useLabStore = create((set, get) => ({
   },
 
   /* ---------------- ADD SOLUTE ---------------- */
+
   addSolute: (solute) => {
-    const {
-      solutes,
-      solvent,
-      temperature,
-      steps,
-      liquidColor,
-    } = get();
+    const { solutes, solvent, temperature, steps, liquidColor } = get();
 
     if (!solvent) {
       alert("Add solvent first!");
@@ -111,16 +119,12 @@ export const useLabStore = create((set, get) => ({
     let precipitate = false;
     let gas = false;
 
-    // Determine last chemical added
     const lastChemical =
       solutes.length > 0
         ? solutes[solutes.length - 1]
         : solvent;
 
-    const reaction = classifyReaction(
-      lastChemical,
-      solute
-    );
+    const reaction = classifyReaction(lastChemical, solute);
 
     if (reaction) {
       reactionType = reaction.type;
@@ -158,6 +162,7 @@ export const useLabStore = create((set, get) => ({
   },
 
   /* ---------------- FINISH EXPERIMENT ---------------- */
+
   finishExperiment: async () => {
     const {
       experimentId,
@@ -171,15 +176,19 @@ export const useLabStore = create((set, get) => ({
       gas,
     } = get();
 
-    if (!experimentId) return;
+    if (!experimentId) {
+      alert("Start experiment first!");
+      return;
+    }
 
     try {
-      // Upload steps
-      for (const step of steps) {
-        await axios.post(`${API}/step/${experimentId}`, step);
+      /* 🔥 Upload all steps in BATCH (Order Guaranteed) */
+      if (steps.length > 0) {
+        await api.post(`/batch-steps/${experimentId}`, { steps });
       }
 
-      await axios.post(`${API}/finish/${experimentId}`, {
+      /* 🔥 Finish experiment */
+      await api.post(`/finish/${experimentId}`, {
         temperature,
         liquidColor,
         solutes: solutes.map((s) => s.name),
@@ -189,15 +198,17 @@ export const useLabStore = create((set, get) => ({
         gas,
       });
 
-      window.open(`${API}/report/${experimentId}`);
+      /* 🔥 Download PDF */
+      window.open(`${API_BASE}/report/${experimentId}`, "_blank");
 
-      console.log("Experiment Finished & Report Downloaded");
+      console.log("✅ Experiment Finished & Report Generated");
     } catch (err) {
-      console.error(err);
+      console.error("❌ Finish Error:", err.response?.data || err.message);
     }
   },
 
-  /* ---------------- RESET LAB ---------------- */
+  /* ---------------- RESET ---------------- */
+
   resetLab: () =>
     set({
       solvent: null,

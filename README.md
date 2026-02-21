@@ -119,4 +119,4 @@ Perfect/
 ## 🤝 Contact
 Your Name - Vedant Amrutkar - Contact [https://www.vedantamrutkar.site/]
 
-Project Link: v-one-kohl.vercel.app
+Project Link: [v-one-kohl.vercel.app]
